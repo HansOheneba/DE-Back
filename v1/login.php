@@ -8,8 +8,8 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/jwtHandler.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') :
-     
+if ($_SERVER['REQUEST_METHOD'] == 'POST'):
+
     $data = json_decode(file_get_contents('php://input'));
 
     if (
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') :
         !isset($data->password) ||
         empty(trim($data->username)) ||
         empty(trim($data->password))
-    ) :
+    ):
         sendJson(
             422,
             'Please fill all the required fields, none of the fields should be empty.',
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') :
     $username = trim($data->username);
     $password = trim($data->password);
 
-    if (strlen($password) < 8) :
+    if (strlen($password) < 8):
         sendJson(422, 'Your password must be at least 8 characters long!');
     endif;
     $sql = "SELECT * FROM users WHERE username=:username";
@@ -58,7 +58,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') :
         'dateJoined' => date('Y-m-d H:i:s', strtotime($row['dateJoined'])),
     ];
 
+    $activityType = 'logged_in';
+    $stmtActivity = $connection->prepare("INSERT INTO user_activity (userID, activityType, timestamp) VALUES (:userID, :activityType, NOW())");
+    $stmtActivity->bindParam(':userID', $userData['userID']);
+    $stmtActivity->bindParam(':activityType', $activityType);
+    $stmtActivity->execute();
+
     $token = encodeToken($userData);
+
+
 
     sendJson(200, '', [
         'token' => $token
