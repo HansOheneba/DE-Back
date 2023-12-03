@@ -19,9 +19,9 @@ function encodeToken($data)
     return JWT::encode($token, $tokenSecret, 'HS256');
 }
 
-// Check if it's a POST request
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Assuming you have $dbService available from your services.php
+
     $connection = $dbService->getConnection();
 
     // Obtain username and password from the POST request
@@ -53,10 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         echo json_encode(['token' => $token]);
     } else {
-        // Handle authentication failure
+
         echo json_encode(['error' => 'Invalid username or password']);
     }
 } else {
-    // Return an error for non-POST requests
+  
     echo json_encode(['error' => 'Invalid request method. Use POST.']);
 }
