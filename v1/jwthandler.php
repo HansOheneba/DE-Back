@@ -7,25 +7,25 @@ use Firebase\JWT\Key;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
 
-$tokenSecret = '12345678';
+$key = '+hz8qMTie9xy4eZFUeaJSHhlo3fvFAIWimZYEqsO42c=';
 
 function encodeToken($data)
 {
-    global $tokenSecret;
+    global $key;
     $token = array(
-        'iss' => 'http://localhost/DE-Back/',
+        'iss' => 'http://localhost/DE-Back/v2',
         'iat' => time(),
         'exp' => time() + 3600, // 1hr
         'data' => $data
     );
-    return JWT::encode($token, $tokenSecret, 'HS256');
+    return JWT::encode($token, $key, 'HS256');
 }
 
 function decodeToken($token)
 {
-    global $tokenSecret;
+    global $key;
     try {
-        $decode = JWT::decode($token, new Key($tokenSecret, 'HS256'));
+        $decode = JWT::decode($token, new Key($key, 'HS256'));
         return $decode->data;
     } catch (ExpiredException | SignatureInvalidException $e) {
         sendJson(401, $e->getMessage());

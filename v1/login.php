@@ -50,8 +50,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') :
         sendJson(401, 'Incorrect Password!');
     }
 
+    $userData = [
+        'userID' => $row['userID'],
+        'username' => $row['username'],
+        'name' => $row['name'],
+        'email' => $row['email'],
+        'dateJoined' => $row['dateJoined']
+    ];
+
     sendJson(200, '', [
-        'token' => encodeToken($row['id'])
+        'token' => encodeToken($userData)
     ]);
 
 endif;

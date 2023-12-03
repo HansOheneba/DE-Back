@@ -7,16 +7,16 @@ use Firebase\JWT\JWT;
 
 function encodeToken($data)
 {
-    $tokenSecret = '12345678';
+    $key = '+hz8qMTie9xy4eZFUeaJSHhlo3fvFAIWimZYEqsO42c=';
 
     $token = array(
-        'iss' => 'http://localhost/php/login-api/',
+        'iss' => 'http://localhost/DE-Back/v2/login ',
         'iat' => time(),
         'exp' => time() + 3600, // 1hr
         'data' => $data
     );
 
-    return JWT::encode($token, $tokenSecret, 'HS256');
+    return JWT::encode($token, $key, 'HS256');
 }
 
 
