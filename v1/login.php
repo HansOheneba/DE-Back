@@ -9,7 +9,7 @@ require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/jwtHandler.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') :
-    
+     
     $data = json_decode(file_get_contents('php://input'));
 
     if (
@@ -34,8 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') :
     if (strlen($password) < 8) :
         sendJson(422, 'Your password must be at least 8 characters long!');
     endif;
-
-    $sql = "SELECT * FROM `users` WHERE `username`=:username";
+    $sql = "SELECT * FROM users WHERE username=:username";
     $stmt = $connection->prepare($sql);
     $stmt->bindParam(':username', $username);
     $stmt->execute();
@@ -50,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') :
         sendJson(401, 'Incorrect Password!');
     }
 
+    // User credentials are valid, generate a JWT token
     $userData = [
         'userID' => $row['userID'],
         'username' => $row['username'],
@@ -58,11 +58,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') :
         'dateJoined' => $row['dateJoined']
     ];
 
+    $token = encodeToken($userData);
+
     sendJson(200, '', [
-        'token' => encodeToken($userData)
+        'token' => $token
     ]);
 
 endif;
 
 sendJson(405, 'Invalid Request Method. HTTP method should be POST');
-?>

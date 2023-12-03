@@ -13,7 +13,7 @@ function encodeToken($data)
 {
     global $key;
     $token = array(
-        'iss' => 'http://localhost/DE-Back/v2',
+        'iss' => 'http://localhost/DE-Back/v1',
         'iat' => time(),
         'exp' => time() + 3600, // 1hr
         'data' => $data
