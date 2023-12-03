@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') :
         'username' => $row['username'],
         'name' => $row['name'],
         'email' => $row['email'],
-        'dateJoined' => $row['dateJoined']
+        'dateJoined' => date('Y-m-d H:i:s', strtotime($row['dateJoined'])),
     ];
 
     $token = encodeToken($userData);

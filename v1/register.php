@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'name' => $name,
             'username' => $username,
             'email' => $email,
+            'dateJoined' => date('Y-m-d H:i:s'),
         ];
 
         $token = encodeToken($userData);
