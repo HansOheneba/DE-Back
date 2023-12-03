@@ -8,6 +8,15 @@ header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 require_once __DIR__ . '/db.php'; 
 require_once __DIR__ . '/sendJson.php';
 
+$name = '';
+$username = '';
+$email = '';
+$password = '';
+$conn = null;
+
+$databaseService = new DatabaseService();
+$conn = $databaseService->getConnection();
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = json_decode(file_get_contents('php://input'));
     if (
@@ -42,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $hash_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $stmt = $db->prepare("SELECT `email`, `username` FROM `users` WHERE `email` = :email OR `username` = :username");
+    $stmt = $conn->prepare("SELECT `email`, `username` FROM `users` WHERE `email` = :email OR `username` = :username");
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':username', $username);
     $stmt->execute();
@@ -56,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     
 
-    $stmt = $db->prepare("INSERT INTO `users`(`name`, `username`, `email`, `password`) VALUES(:name, :username, :email, :password)");
+    $stmt = $conn->prepare("INSERT INTO `users`(`name`, `username`, `email`, `password`) VALUES(:name, :username, :email, :password)");
     $stmt->bindParam(':name', $name);
     $stmt->bindParam(':username', $username);
     $stmt->bindParam(':email', $email);

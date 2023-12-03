@@ -8,7 +8,8 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/jwtHandler.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') :
+    
     $data = json_decode(file_get_contents('php://input'));
 
     if (
@@ -16,36 +17,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         !isset($data->password) ||
         empty(trim($data->username)) ||
         empty(trim($data->password))
-    ) {
+    ) :
         sendJson(
             422,
-            'Please fill all the required fields & None of the fields should be empty.',
+            'Please fill all the required fields, none of the fields should be empty.',
             ['required_fields' => ['username', 'password']]
         );
-    }
+    endif;
+
+    $dbService = new DatabaseService();
+    $connection = $dbService->getConnection();
 
     $username = trim($data->username);
     $password = trim($data->password);
 
-    $sql = "SELECT * FROM `users` WHERE `username` = :username";
-    $stmt = $db->prepare($sql);
+    if (strlen($password) < 8) :
+        sendJson(422, 'Your password must be at least 8 characters long!');
+    endif;
+
+    $sql = "SELECT * FROM `users` WHERE `username`=:username";
+    $stmt = $connection->prepare($sql);
     $stmt->bindParam(':username', $username);
     $stmt->execute();
 
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($row === null) {
-        sendJson(404, 'User not found! (Username is not registered)');
-    } elseif (!password_verify($password, $row['password'])) {
-        sendJson(401, 'Incorrect Password!');
-    } else {
-        $userData = isset($row['id']) ? ['id' => $row['id']] : [];
-        sendJson(200, '', [
-            'token' => encodeToken($userData)
-        ]);
+    if ($row === false) {
+        sendJson(404, 'User not found! (username is not registered)');
     }
-    
-}
+
+    if (!password_verify($password, $row['password'])) {
+        sendJson(401, 'Incorrect Password!');
+    }
+
+    sendJson(200, '', [
+        'token' => encodeToken($row['id'])
+    ]);
+
+endif;
 
 sendJson(405, 'Invalid Request Method. HTTP method should be POST');
 ?>

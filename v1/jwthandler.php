@@ -7,13 +7,13 @@ use Firebase\JWT\Key;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
 
-$tokenSecret = 'my_strong_token_secret';
+$tokenSecret = '12345678';
 
 function encodeToken($data)
 {
     global $tokenSecret;
     $token = array(
-        'iss' => 'http://localhost/php/login-api/',
+        'iss' => 'http://localhost/DE-Back/',
         'iat' => time(),
         'exp' => time() + 3600, // 1hr
         'data' => $data
