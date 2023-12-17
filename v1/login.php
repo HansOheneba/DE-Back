@@ -13,36 +13,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     $data = json_decode(file_get_contents('php://input'));
 
     if (
-        !isset($data->username) ||
+        !isset($data->email) ||
         !isset($data->password) ||
-        empty(trim($data->username)) ||
+        empty(trim($data->email)) ||
         empty(trim($data->password))
     ):
         sendJson(
             422,
             'Please fill all the required fields, none of the fields should be empty.',
-            ['required_fields' => ['username', 'password']]
+            ['required_fields' => ['email', 'password']]
         );
     endif;
 
     $dbService = new DatabaseService();
     $connection = $dbService->getConnection();
 
-    $username = trim($data->username);
+    $email = trim($data->email);
     $password = trim($data->password);
 
     if (strlen($password) < 8):
         sendJson(422, 'Your password must be at least 8 characters long!');
     endif;
-    $sql = "SELECT * FROM users WHERE username=:username";
+    $sql = "SELECT * FROM users WHERE email=:email";
     $stmt = $connection->prepare($sql);
-    $stmt->bindParam(':username', $username);
+    $stmt->bindParam(':email', $email);
     $stmt->execute();
 
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($row === false) {
-        sendJson(404, 'User not found! (username is not registered)');
+        sendJson(404, 'User not found! (email is not registered)');
     }
 
     if (!password_verify($password, $row['password'])) {
@@ -64,14 +64,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     $stmtActivity->bindParam(':activityType', $activityType);
     $stmtActivity->execute();
 
+
     $token = encodeToken($userData);
 
-
-
-    sendJson(200, '', [
+    sendJson(200, 'Logged in Successfully', [
         'token' => $token
     ]);
 
 endif;
 
 sendJson(405, 'Invalid Request Method. HTTP method should be POST');
+?>
