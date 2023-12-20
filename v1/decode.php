@@ -32,13 +32,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $session::set('dateJoined', $decodedData->dateJoined);
 
          
-            $responseData = [
+            $responseData = array(
                 'userID' => $decodedData->userID,
                 'username' => $decodedData->username,
                 'name' => $decodedData->name,
                 'email' => $decodedData->email,
-                'dateJoined' => $decodedData->dateJoined
-            ];
+                'dateJoined' => $decodedData->dateJoined,
+
+                'redirect' => 'encrypt.php',
+            );
+                
+            
 
             header('Content-Type: application/json');
             echo json_encode($responseData);
