@@ -13,7 +13,6 @@ $name = '';
 $username = '';
 $email = '';
 $password = '';
-$confirmPassword = '';
 
 $databaseService = new DatabaseService();
 $conn = $databaseService->getConnection();
@@ -25,12 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $data->username;
     $email = $data->email;
     $password = $data->password;
-    $confirmPassword = $data->confirmPassword;
-
-    if ($password !== $confirmPassword) {
-        sendJson(400, 'Passwords do not match.');
-        exit();
-    }
 
 
     $trimmedPassword = trim($password);

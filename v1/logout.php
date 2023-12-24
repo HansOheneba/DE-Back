@@ -7,6 +7,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/jwtHandler.php';
+require_once __DIR__ . '/Sessions.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST'):
 
@@ -16,16 +17,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         sendJson(401, 'Authorization header is missing.');
     }
 
-    $token = $headers['Authorization'];
-
+    $token = str_replace('Bearer ', '', $headers['Authorization']);
 
     $dbService = new DatabaseService();
     $connection = $dbService->getConnection();
     try {
-        $token = preg_replace('/^Bearer\s+/i', '', $token);
 
         $userData = decodeToken($token);
 
+        $session = Sessions::start();
+        $session::removeAll();
 
         $activityType = 'logged_out';
         $stmtActivity = $connection->prepare("INSERT INTO user_activity (userID, activityType, timestamp) VALUES (:userID, :activityType, NOW())");
@@ -40,5 +41,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
 endif;
 
 sendJson(405, 'Invalid Request Method. HTTP method should be POST');
-
-
+?>
